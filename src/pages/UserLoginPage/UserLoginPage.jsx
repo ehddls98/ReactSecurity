@@ -1,8 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { signinApi } from '../../apis/signinApi';
 import { css } from "@emotion/react";
+import UserJoinPage from '../UserJoinPage/UserJoinPage';
 
 const layout = css`
         display: flex;
@@ -107,10 +108,10 @@ function UserLoginPage(props) {
     const handleLoginSubmitOnClick = async () => {
         const signinData = await signinApi(inputUser);
         if (!signinData.isSuccess) {
-            if(signinData.errorStatus ==='fieldError') {
+            if (signinData.errorStatus === 'fieldError') {
                 showFieldErrorMessage(signinData.error);
             }
-            if(signinData.errorStatus === 'loginError') {
+            if (signinData.errorStatus === 'loginError') {
                 let EmptyFieldErrors = {
                     username: <></>,
                     password: <></>,
@@ -120,11 +121,11 @@ function UserLoginPage(props) {
             }
             return;
         }
-        
-            localStorage.setItem("accessToken", "Bearer " + signinData.token.accessToken); // 로그인에 성공하면 accessToken이 LocalStorage에 저장된다. 
-            window.location.replace("/"); 
-            // 주소창에 입력하고 Enter를 친것과 같다. 
-            // -> 처음부터 끝까지 rendering 되면서 instance에 accessToken을 넣어준다. 
+
+        localStorage.setItem("accessToken", "Bearer " + signinData.token.accessToken); // 로그인에 성공하면 accessToken이 LocalStorage에 저장된다. 
+        window.location.replace("/");
+        // 주소창에 입력하고 Enter를 친것과 같다. 
+        // -> 처음부터 끝까지 rendering 되면서 instance에 accessToken을 넣어준다. 
     }
 
     return (

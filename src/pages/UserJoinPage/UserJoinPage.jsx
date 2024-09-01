@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -89,6 +89,7 @@ function UserJoinPage(props) {
     });
 
 const handleInputUserOnChange = (e) => {
+    console.log(e);
     setInputUser(inputUser => ({
         ...inputUser,
         [e.target.name]: e.target.value
@@ -114,14 +115,13 @@ const showFieldErrorMessage = (fieldErrors) => {
         name: <></>,
         email: <></>,
     };
-
+    console.log(EmptyFieldErrors);
     for(let fieldError of fieldErrors) { //fieldErrors 안에 있는 field와 defaultMessage를 꺼내서 EmptyFieldErrors에 넣어준다.
         EmptyFieldErrors = {
             ...EmptyFieldErrors,
             [fieldError.field]: <p>{fieldError.defaultMessage}</p>,
         }
     }
-
     setFieldErrorMessages(EmptyFieldErrors);
     return;
 }
