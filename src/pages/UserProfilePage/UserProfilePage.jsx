@@ -8,7 +8,6 @@ import { Progress } from 'react-sweet-progress';
 import "react-sweet-progress/lib/style.css";
 import { updateProfileImgApi } from '../../apis/userApi';
 /** @jsxImportSource @emotion/react */
-
 const layout = css`
     display: flex;
     flex-direction: column;
@@ -41,38 +40,39 @@ const progressBox = css`
 `;
 
 function UserProfilePage(props) {
-    const queryClient = useQueryClient();
-    const userInfoState = queryClient.getQueryState("userInfoQuery");
-    const [uploadPercent, setUploadPercent] = useState(0);
+    const queryClient = useQueryClient(); // 상위 컴포넌트에서 생성되어 제공된 queryClient 객체를 가져온다. 
+    const userInfoState = queryClient.getQueryState("userInfoQuery"); // 쿼리의 현재 상태를 가져옵니다. 이 상태 객체는 쿼리의 데이터, 로딩 상태, 오류 정보 등을 포함할 수 있습니다.
+    const [ uploadPercent, setUploadPercent ] = useState(0);
 
     const handleImageChangeOnClick = () => {
         if (window.confirm("프로필 사진을 변경하시겠습니까?")) {
-            const fileInput = document.createElement("input");
+            const fileInput = document.createElement("input"); // fileInput이라는 input 요소 생성
             fileInput.setAttribute("type", "file"); // type -> file로 속성 설정
-            fileInput.setAttribute("accept", "image/*");
-            fileInput.click();
+            fileInput.setAttribute("accept", "image/*"); // 선택할 수 있는 file 유형은 image만으로 설정
+            fileInput.click(); // 파일 선택창이 뜨게 하는 코드
 
             fileInput.onchange = (e) => {
-                const files = Array.from(e.target.files);
-                const profileImage = files[0];
-                setUploadPercent(0);
+                const files = Array.from(e.target.files); // 선택한 파일을 리스트로 들고온다.                
+                const profileImage = files[0]; // 리스트의 0번째 인덱스를 profileImage에 대입
+                setUploadPercent(0); // upload 상태를 0%로 초기화
+                console.log(profileImage.name);
 
-                const storageRef = ref(storage, `user/profile/${uuid()}_${profileImage.name}`);
-                const uploadTask = uploadBytesResumable(storageRef, profileImage); // 업로드(경로, 파일) 
-                uploadTask.on(
-                    "state_changed",
-                    (snapshot) => {
+                const storageRef = ref(storage, `user/profile/${uuid()}_${profileImage.name}`); // 업로드할 파일의 경로
+                const uploadTask = uploadBytesResumable(storageRef, profileImage); // 업로드하는 동안 진행 상태를 추적할 수 있는 업로드 작업을 반환
+                uploadTask.on(  //Firebase Storage에서 파일 업로드 작업의 상태를 추적하고, 업로드 진행 상태가 변경될 때마다 특정 콜백 함수를 실행하는 데 사용
+                    "state_changed", // 업로드 상태가 변경될 때마다 호출
+                    (snapshot) => { // 업로드 진행 상태를 추적하는 콜백 함수
                         setUploadPercent(
                             Math.round(snapshot.bytesTransferred / snapshot.totalBytes) * 100
                         );
                     },
-                    (error) => {
+                    (error) => { // 업로드 중 오류가 발생했을 때 호출되는 콜백 함수
                         console.error(error);
                     },
-                    async (success) => {
-                        const url = await getDownloadURL(storageRef);
-                        const response = await updateProfileImgApi(url);
-                        queryClient.invalidateQueries(["userInfoQuery"]); // 강제로 쿼리 데이터 만료
+                    async (success) => { // 업로드가 성공적으로 완료되었을 때 호출되는 콜백 함수
+                        const url = await getDownloadURL(storageRef); // fireBase에 저장된 이미지의 다운로드 url 값을 꺼낸다.
+                        const response = await updateProfileImgApi(url); // DB에 프로필 이미지 저장(빈 값이면 default 이미지로 설정)
+                        queryClient.invalidateQueries(["userInfoQuery"]); // 강제로 쿼리 데이터 만료, 쿼리가 만료되면 알아서 요청갔다가 다시 들고옴
                     }
                 );
             }

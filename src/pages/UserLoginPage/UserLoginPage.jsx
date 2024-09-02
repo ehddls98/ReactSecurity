@@ -127,7 +127,7 @@ function UserLoginPage(props) {
 
         instance.interceptors.request.use(config => {
             config.headers["Authorization"] = localStorage.getItem("accessToken"); 
-            // instance의 headers 에 토큰 키값을 넣어준다. 그래야 로그인 후 이전 페이지로 이동할 때 토큰을 가진 상태로 이동할 수 있기 때문이다. 
+            // instance의 headers에 토큰 키값을 넣어준다. 그래야 로그인 후 이전 페이지로 이동할 때 토큰을 가진 상태로 이동할 수 있기 때문이다. 
             return config;
         });
 
