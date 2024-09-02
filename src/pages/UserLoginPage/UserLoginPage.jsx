@@ -1,9 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { signinApi } from '../../apis/signinApi';
 import { css } from "@emotion/react";
-import UserJoinPage from '../UserJoinPage/UserJoinPage';
+import { instance } from '../../apis/util/instance';
 
 const layout = css`
         display: flex;
@@ -71,6 +71,7 @@ const loginButton = css`
 `;
 
 function UserLoginPage(props) {
+    const navigate = useNavigate();
 
     const [inputUser, setInputUser] = useState({
         username: "",
@@ -122,11 +123,21 @@ function UserLoginPage(props) {
             return;
         }
 
-        localStorage.setItem("accessToken", "Bearer " + signinData.token.accessToken); // 로그인에 성공하면 accessToken이 LocalStorage에 저장된다. 
-        window.location.replace("/");
-        // 주소창에 입력하고 Enter를 친것과 같다. 
-        // -> 처음부터 끝까지 rendering 되면서 instance에 accessToken을 넣어준다. 
+        localStorage.setItem("accessToken", "Bearer " + signinData.token.accessToken); // 로그인에 성공하면 accessToken이 LocalStorage에 저장된다. instance headers 의 값은 여전히 null 이다.
+
+        instance.interceptors.request.use(config => {
+            config.headers["Authorization"] = localStorage.getItem("accessToken"); 
+            // instance의 headers 에 토큰 키값을 넣어준다. 그래야 로그인 후 이전 페이지로 이동할 때 토큰을 가진 상태로 이동할 수 있기 때문이다. 
+            return config;
+        });
+
+        if(window.history.length > 2) {
+            navigate(-1); // 로그인 후에 클라이언트가 로그인 직전에 있었던 페이지로 보낸다.(ex: 프로필 페이지)
+            return;
+        }
+        navigate("/"); // 로그인 전에 history가 2 미만이면 index 페이지로 보낸다.
     }
+
 
     return (
         <div css={layout}>
