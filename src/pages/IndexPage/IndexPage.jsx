@@ -119,11 +119,15 @@ const profileInfo = css`
 `;
 
 function IndexPage(props) {
+    
     const navigate = useNavigate();
 
     const queryClient = useQueryClient();
-    const accessTokenValidState = queryClient.getQueryState("accessTokenValidQuery");
+    const accessTokenValidState = queryClient.getQueryState("accessTokenValidQuery"); 
     const userInfoState = queryClient.getQueryState("userInfoQuery");
+    // queryClient.getQueryState("쿼리 키"); 
+    // -> 쿼리의 상태를 가져옴, 반환된 객체는 쿼리의 상태를 나타내며 status, data, error 등의 속성을 가진다.
+    // status 속성은 쿼리의 현재 상태(idle, loading, error, success) 중 하나의 값을 가진다.
 
     console.log(accessTokenValidState);
     console.log(userInfoState);
@@ -147,10 +151,10 @@ function IndexPage(props) {
                 {
                     accessTokenValidState.status !== "success"
                         ?
-                        accessTokenValidState.status !== "error" //success가 아닌데 error면 로그인 박스
+                        accessTokenValidState.status !== "error" //success가 아닌데 error도 아니면 빈 태그, error면 로그인 박스 렌더링
                             ?
-                            <></>
-                            :
+                            <></> 
+                            : 
                             <div css={rightBox}>
                                 <p>더 안전하고 편리하게 이용하세요</p>
                                 <button onClick={handleLoginButtonOnClick}>로그인</button>
@@ -160,7 +164,7 @@ function IndexPage(props) {
                                     <Link to={"/user/join"}>회원가입</Link>
                                 </div>
                             </div>
-                        :
+                        : // 상태가 success인 경우 사용자 정보를 표시하는 렌더링
                         <div css={rightBox}>
                             <div css={userInfoBox}>
                                 <div css={profileImgBox} onClick={() => navigate("/profile")}>

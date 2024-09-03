@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 import { instance } from './apis/util/instance';
 import UserProfilePage from './pages/UserProfilePage/UserProfilePage';
+import OAuth2JoinPage from './pages/OAuth2JoinPage/OAuth2JoinPage';
 
 function App() {
 
@@ -18,14 +19,15 @@ function App() {
     * 페이지 이동시 auth(로그인, 토큰) 확인
     * 1. index(home) 페이지를 먼저 들어가서 로그인 페이지로 이동한 경우 -> index로 이동
     * 2. 탭을 열자마자 주소창에 수동입력을 통해 로그인 페이지로 이동한 경우 -> index로 이동
-    * 3. 로그인 후 사용 가능한 페이지로 들어갔을 때(ex 프로필) 로그인 페이지로 이동한 경우 -> 이전 페이지 
+    * 3. 로그인 후 사용 가능한 페이지로 들어갔을 때 (ex: 프로필) 로그인 페이지로 이동한 경우 -> 이전 페이지 
     * 4. 로그인이 된 상태 -> 어느 페이지든 이동
     */
+
     useEffect(() => {
         if (!authRefresh) {
             setAuthRefresh(true);
         }
-    }, [location.pathname]); // 페이지 이동할때 마다 accessTokenValid 쿼리가 동작(enabled가 true가 됨)하여 요청(토큰 유효성 검사)이 보내진다.
+    }, [location.pathname]); // 페이지를 이동할때 마다 accessTokenValid 쿼리가 동작(enabled가 true가 됨)하여 요청(토큰 유효성 검사)이 보내진다.
 
     const accessTokenValid = useQuery( // useQuery: 자동으로 요청을 날리고, 캐싱 작업을 한다. 최신 데이터인지 아닌지를 검증할 때 사용한다. useMutate: insert, update, delete http 요청을 날릴때 사용한다. 
         ["accessTokenValidQuery"],
@@ -82,6 +84,7 @@ function App() {
         <Routes>
             <Route path="/" element={<IndexPage />} />
             <Route path="/user/join" element={<UserJoinPage />} />
+            <Route path="/user/join/oauth2" element={<OAuth2JoinPage />} />
             <Route path="/user/login" element={<UserLoginPage />} />
             <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/admin/*" element={<></>} />

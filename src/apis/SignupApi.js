@@ -19,7 +19,6 @@ export const signupApi = async (user) => {
         signupData = {
             isSuccess: true,
             ok: response.data
-
         }
     } catch (error) {
         const response = error.response;

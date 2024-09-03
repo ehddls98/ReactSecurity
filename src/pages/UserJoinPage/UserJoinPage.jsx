@@ -89,7 +89,6 @@ function UserJoinPage(props) {
     });
 
 const handleInputUserOnChange = (e) => {
-    console.log(e);
     setInputUser(inputUser => ({
         ...inputUser,
         [e.target.name]: e.target.value
@@ -102,7 +101,6 @@ const handleJoinSubmitOnClick = async () => {
         showFieldErrorMessage(signupData.fieldErrors);
         return;
     }
-
     alert(`${signupData.ok.message}`);
     navigate("/user/login");
 }
